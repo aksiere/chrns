@@ -1,15 +1,19 @@
 <!-- src/routes/+page.svelte -->
 <script>
+    import { browser } from '$app/environment'
+
 	let messages = []
 
-	const source = new EventSource('/events')
+	if (browser) {
+		const source = new EventSource('/events')
 
-	source.onmessage = (event) => {
-		messages = [...messages, event.data]
-	}
+		source.onmessage = (event) => {
+			messages = [...messages, event.data]
+		}
 
-	source.onerror = (error) => {
-		console.error('SSE Error:', error)
+		source.onerror = (error) => {
+			console.error('SSE Error:', error)
+		}
 	}
 </script>
 

@@ -4,25 +4,44 @@ export const GET = async () => {
 	let controller
 	let inactivityTimer
 	let interval
+	let closed = false
+
+	const closeStream = () => {
+		if (closed) return
+		closed = true
+
+		clearInterval(interval)
+		clearTimeout(inactivityTimer)
+
+		try {
+			controller.close()
+		} catch (e) {
+			console.warn('Stream already closed:', e)
+		}
+	}
 
 	const resetInactivityTimer = () => {
 		clearTimeout(inactivityTimer)
 		inactivityTimer = setTimeout(() => {
-			clearInterval(interval)
-			controller.close()
+			closeStream()
 		}, 30_000) // 30 секунд
 	}
 
 	const stream = new ReadableStream({
 		start(ctrl) {
 			controller = ctrl
-
 			let count = 0
 
 			const send = () => {
-				const data = `data: ping ${count++}\n\n`
-				controller.enqueue(encoder.encode(data))
-				resetInactivityTimer()
+				if (closed) return
+				try {
+					const data = `data: ping ${count++}\n\n`
+					controller.enqueue(encoder.encode(data))
+					resetInactivityTimer()
+				} catch (e) {
+					console.warn('Failed to enqueue:', e)
+					closeStream()
+				}
 			}
 
 			interval = setInterval(send, 5000)
