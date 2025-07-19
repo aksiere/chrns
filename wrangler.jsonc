@@ -1,6 +1,6 @@
 {
 	"name": "chrns",
-	"account_id": "2ba8314be1c46fb1760cc38b50852625980865cb",
+	"account_id": "eca042a5cd612f1583efe28c39593038",
 	"main": "./.cloudflare/worker.js",
 	"build": {
 		"command": "bun run build"
