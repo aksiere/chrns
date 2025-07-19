@@ -1,2 +1,21 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href='https://svelte.dev/docs/kit'>svelte.dev/docs/kit</a> to read the documentation</p>
+<!-- src/routes/+page.svelte -->
+<script>
+	let messages = []
+
+	const source = new EventSource('/events')
+
+	source.onmessage = (event) => {
+		messages = [...messages, event.data]
+	}
+
+	source.onerror = (error) => {
+		console.error('SSE Error:', error)
+	}
+</script>
+
+<h2>Messages from Server:</h2>
+<ul>
+	{#each messages as msg, i (i)}
+		<li>{msg}</li>
+	{/each}
+</ul>
