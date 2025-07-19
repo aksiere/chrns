@@ -5,6 +5,10 @@
 	"build": {
 		"command": "bun run build"
 	},
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".svelte-kit/cloudflare",
+	},
 	"compatibility_date": "2025-07-20",
 	"observability": {
 		"logs": {
