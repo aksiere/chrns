@@ -1,0 +1,25 @@
+{
+	"name": "chrns",
+	"account_id": "2ba8314be1c46fb1760cc38b50852625980865cb",
+	"main": "./.cloudflare/worker.js",
+	"build": {
+		"command": "bun run build"
+	},
+	"compatibility_date": "2025-07-20",
+	"observability": {
+		"logs": {
+			"enabled": true
+		}
+	},
+	"placement": {
+		"mode": "smart"
+	},
+	"compatibility_flags": [
+		"streams_enable_constructors"
+	],
+	 "triggers": {
+		"crons": [
+			"* * * * *"
+		]
+	}
+}
