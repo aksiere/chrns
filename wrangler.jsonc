@@ -18,10 +18,7 @@
 	"placement": {
 		"mode": "smart"
 	},
-	"compatibility_flags": [
-		"streams_enable_constructors"
-	],
-	 "triggers": {
+	"triggers": {
 		"crons": [
 			"* * * * *"
 		]
