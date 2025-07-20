@@ -1,20 +1,27 @@
-// src/routes/custom-event/+server.js
 import { produce } from 'sveltekit-sse'
+import { subscribe, broadcast } from '$lib/broadcast'
 
-function delay(milliseconds) {
-	return new Promise(function run(resolve) {
-		setTimeout(resolve, milliseconds)
-	})
+function startTicker() {
+	setInterval(() => {
+		broadcast('message', `the time is ${Date.now()}`)
+	}, 1000)
 }
 
+let started = false
+
 export function POST() {
+	if (!started) {
+		startTicker()
+		started = true
+	}
+
 	return produce(async function start({ emit }) {
-		while (true) {
-			const { error } = emit('message', `the time is ${Date.now()}`)
-			if (error) {
-				return
-			}
-			await delay(1000)
+		const unsubscribe = subscribe(({ event, data }) => {
+			emit(event, data)
+		})
+
+		return () => {
+			unsubscribe()
 		}
 	})
 }
