@@ -4,7 +4,7 @@ import { EventEmitter } from 'events'
 const emitter = new EventEmitter()
 
 setInterval(() => {
-	emitter.emit('tick', Date.now().toString())
+	emitter.emit('tick', `${Date.now()}`)
 }, 1000)
 
 export function POST() {
