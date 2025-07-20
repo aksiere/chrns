@@ -1,27 +1,21 @@
 import { produce } from 'sveltekit-sse'
-import { subscribe, broadcast } from '$lib/broadcast'
+import { EventEmitter } from 'events'
 
-function startTicker() {
-	setInterval(() => {
-		broadcast('message', `the time is ${Date.now()}`)
-	}, 1000)
-}
+const emitter = new EventEmitter()
 
-let started = false
+setInterval(() => {
+	emitter.emit('tick', Date.now().toString())
+}, 1000)
 
 export function POST() {
-	if (!started) {
-		startTicker()
-		started = true
-	}
-
 	return produce(async function start({ emit }) {
-		const unsubscribe = subscribe(({ event, data }) => {
-			emit(event, data)
-		})
-
-		return () => {
-			unsubscribe()
+		const onTick = (message) => {
+			const { error } = emit('message', message)
+			if (error) {
+				emitter.off('tick', onTick)
+			}
 		}
+
+		emitter.on('tick', onTick)
 	})
 }

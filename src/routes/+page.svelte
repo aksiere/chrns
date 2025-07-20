@@ -9,4 +9,4 @@
 	}).select('message')
 </script>
 
-{$value}
+{$value || 'Connecting...'}
