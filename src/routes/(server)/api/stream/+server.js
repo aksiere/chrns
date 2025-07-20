@@ -1,21 +1,26 @@
 import { produce } from 'sveltekit-sse'
-import { EventEmitter } from 'events'
 
-const emitter = new EventEmitter()
+/** @type {Set<Function>} */
+const emitters = new Set()
 
 setInterval(() => {
-	emitter.emit('tick', `${Date.now()}`)
+	const message = `${Date.now()}`
+	for (const emit of emitters) {
+		const { error } = emit('message', message)
+		if (error) {
+			emitters.delete(emit)
+		}
+	}
 }, 1000)
 
 export function POST() {
-	return produce(async function start({ emit }) {
-		const onTick = (message) => {
-			const { error } = emit('message', message)
-			if (error) {
-				emitter.off('tick', onTick)
-			}
+	return produce(function start({ emit }) {
+		console.log('Client connected.')
+		emitters.add(emit)
+	}, {
+		ping: 4000,
+		stop() {
+			console.log('Client disconnected.')
 		}
-
-		emitter.on('tick', onTick)
-	})
+	},)
 }
