@@ -1,5 +1,5 @@
 import { produce } from 'sveltekit-sse'
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'node:events'
 
 const emitter = new EventEmitter()
 
