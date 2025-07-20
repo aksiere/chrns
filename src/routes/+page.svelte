@@ -1,25 +1,24 @@
-<!-- src/routes/+page.svelte -->
-<script>
+<script lang='ts'>
     import { browser } from '$app/environment'
+	import { onMount } from 'svelte'
 
-	let messages = []
+	let data = $state('Connecting...')
 
 	if (browser) {
-		const source = new EventSource('/events')
+		fetch('/api/stream').then(res => {
+			const decoder = new TextDecoder()
 
-		source.onmessage = (event) => {
-			messages = [...messages, event.data]
-		}
+			if (!res.body) return
 
-		source.onerror = (error) => {
-			console.error('SSE Error:', error)
-		}
+			const writable = new WritableStream({
+				write(chunk) {
+					data = JSON.parse(decoder.decode(chunk).trim())
+				}
+			})
+
+			res.body.pipeTo(writable)
+		})
 	}
 </script>
 
-<h2>Messages from Server:</h2>
-<ul>
-	{#each messages as msg, i (i)}
-		<li>{msg}</li>
-	{/each}
-</ul>
+<p>{data}</p>
