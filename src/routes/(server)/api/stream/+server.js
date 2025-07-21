@@ -30,6 +30,9 @@ async function startBroadcasting() {
 			}
 		}
 
+		console.log(clients.size, 'clients connected')
+		
+
 		const xDay = 6
 		const yDay = 0
 
@@ -48,13 +51,13 @@ async function startBroadcasting() {
 
 export function POST() {
 	return produce(({ emit }) => {
-		// console.log('Connection opened')
+		console.log('Connection opened')
 		clients.add(emit)
 		startBroadcasting()
 
 		return () => {
 			clients.delete(emit)
-			// console.log('Connection closed')
+			console.log('Connection closed')
 		}
 	})
 }

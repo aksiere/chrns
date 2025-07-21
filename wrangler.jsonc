@@ -9,6 +9,7 @@
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
 	},
+	"version": "1.0.${GIT_COMMIT_COUNT}",
 	"compatibility_date": "2025-07-19",
 	"observability": {
 		"logs": {
