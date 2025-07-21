@@ -84,7 +84,7 @@
 		<p>failed</p>
 	{/snippet}
 
-	{await turnstile}
+	{await turnstile === true}
 
 	<form on:submit={handleSubmit}>
 		<!-- Your form inputs here -->
