@@ -1,20 +1,20 @@
-import { json } from '@sveltejs/kit'
-
 export async function POST({ request }) {
 	const { token } = await request.json()
+	const secret = '0x4AAAAAABl2Ijc0-vPANjtFaVDV_0oggsM'
 
-	const secretKey = '0x4AAAAAABl2Ijc0-vPANjtFaVDV_0oggsM'
-
-	const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+	const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 		body: new URLSearchParams({
-			secret: secretKey,
+			secret,
 			response: token
 		})
 	})
 
-	const data = await response.json()
+	const data = await res.json()
 
-	return json({ success: data.success })
+	if (data.success) {
+		return new Response(null, { status: 200 })
+	} else {
+		return new Response(null, { status: 403 })
+	}
 }
