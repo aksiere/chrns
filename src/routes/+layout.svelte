@@ -28,44 +28,30 @@
 <script>
 	import { onMount } from 'svelte'
 	let token = ''
-	let widgetId
-
-	// Replace with your actual site key
 	const siteKey = '0x4AAAAAABl2IowFuPC8EUEy'
 
 	onMount(() => {
-		const interval = setInterval(() => {
+		const check = () => {
 			if (window.turnstile) {
-				clearInterval(interval)
-				widgetId = window.turnstile.render('#turnstile-container', {
+				window.turnstile.render('#turnstile-container', {
 					sitekey: siteKey,
 					callback: (t) => (token = t),
 					'expired-callback': () => (token = ''),
 				})
+			} else {
+				setTimeout(check, 100) // wait until turnstile is loaded
 			}
-		}, 100)
+		}
+		check()
 	})
 
-	const handleSubmit = async (event) => {
-		event.preventDefault()
+	const handleSubmit = async (e) => {
+		e.preventDefault()
 		if (!token) {
-			alert('Please complete the Turnstile check.')
+			alert('Complete Turnstile first.')
 			return
 		}
-
-		const res = await fetch('/api/verify-turnstile', {
-			method: 'POST',
-			body: JSON.stringify({ token }),
-			headers: { 'Content-Type': 'application/json' },
-		})
-
-		const data = await res.json()
-		if (data.success) {
-			// Proceed with your protected action
-			alert('Turnstile passed ✅')
-		} else {
-			alert('Turnstile failed ❌')
-		}
+		// Submit logic here
 	}
 </script>
 
@@ -74,8 +60,6 @@
 </svelte:head>
 
 <form on:submit={handleSubmit}>
-	<!-- Your form inputs here -->
-
-	<div id='turnstile-container' class='my-turnstile'></div>
+	<div id='turnstile-container'></div>
 	<button type='submit'>Submit</button>
 </form>
