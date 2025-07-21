@@ -5,12 +5,13 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev --host",
-		"build": "vite build",
+		"build": "vite build --var VERSION=$(git rev-list --count HEAD)",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''"
 	},
 	"devDependencies": {
 		"@supabase/ssr": "^0.6.1",
+		"@sveltejs/adapter-auto": "^6.0.1",
 		"@sveltejs/adapter-cloudflare": "^7.1.0",
 		"@sveltejs/kit": "^2.25.1",
 		"@sveltejs/vite-plugin-svelte": "^6.1.0",
