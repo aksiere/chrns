@@ -85,11 +85,11 @@
 	{/snippet}
 
 	{await turnstile}
+
+	<form on:submit={handleSubmit}>
+		<!-- Your form inputs here -->
+
+		<div id='turnstile-container' class='my-turnstile'></div>
+		<button type='submit'>Submit</button>
+	</form>
 </svelte:boundary>
-
-<form on:submit={handleSubmit}>
-	<!-- Your form inputs here -->
-
-	<div id='turnstile-container' class='my-turnstile'></div>
-	<button type='submit'>Submit</button>
-</form>
