@@ -1,41 +1,34 @@
 import { produce } from 'sveltekit-sse'
 
+const xDay = 6
+const yDay = 0
+
 function delay(milliseconds) {
 	return new Promise(function run(resolve) {
 		setTimeout(resolve, milliseconds)
 	})
 }
 
-const emitters = new Set()
-
 export function POST() {
 	return produce(async function start({ emit }) {
-		emitters.add(emit)
+		while (true) {
+			const now = new Date()
+			const dayOfWeek = now.getDay()
+			const targetDay = dayOfWeek === xDay ? yDay : xDay
+			const daysUntilTarget = (targetDay - dayOfWeek + 7) % 7 || 7
+			const nextTarget = new Date(now)
+			nextTarget.setDate(now.getDate() + daysUntilTarget)
+			nextTarget.setHours(0, 0, 0, 0)
+			const secondsUntil = Math.floor((nextTarget - now) / 1000)
 
-		try {
-			while (true) {
-				const xDay = 6
-				const yDay = 0
+			const isActive = dayOfWeek === xDay
+			const { error } = emit('message', JSON.stringify({ isActive, secondsUntil }))
 
-				const now = new Date()
-				const dayOfWeek = now.getDay()
-				const targetDay = dayOfWeek === xDay ? yDay : xDay
-				const daysUntilTarget = (targetDay - dayOfWeek + 7) % 7 || 7
-				const nextTarget = new Date(now)
-				nextTarget.setDate(now.getDate() + daysUntilTarget)
-				nextTarget.setHours(0, 0, 0, 0)
-				const secondsUntilSaturday = Math.floor((nextTarget - now) / 1000)
-
-				for (const clientEmit of emitters) {
-					const { error } = clientEmit('message', secondsUntilSaturday.toString())
-					if (error) {
-						emitters.delete(clientEmit)
-					}
-				}
-				await delay(1000)
+			if (error) {
+				return
 			}
-		} finally {
-			emitters.delete(emit)
+
+			await delay(1000)
 		}
 	})
 }
