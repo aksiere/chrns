@@ -1,11 +1,15 @@
 <script>
-    import { goto } from '$app/navigation'
 	import '../app.css'
+	import { source } from 'sveltekit-sse'
+    import { goto } from '$app/navigation'
+	import { secondsToDDHHMMSS } from '$lib'
 	
 	let { children } = $props()
+	const value = source('/api/stream').select('message')
 
 	let items = $derived([
 		{ href: '/pckm', title: 'pick\'em' },
+		{ href: '/vt', title: `${secondsToDDHHMMSS(JSON.parse($value || '{}')?.secondsUntil || 0)}`, disabled: !JSON.parse($value || '{}')?.isActive, active: JSON.parse($value || '{}')?.isActive },
 		{ href: '/2xdlbb', title: '2xdolbaeb' },
 	])
 </script>
@@ -18,8 +22,15 @@
 
 		<div class='flex justify-between gap-[1rem]'>
 			{#each items as item (item.href)}
-				<div onclick={() => goto(item.href)} class='flex-1 px-[.75rem] py-[.25rem] bg-1 hover:bg-2 rounded-full transition-all cursor-pointer'>
-					{item.title}
+				<div onclick={() => goto(item.href)} class='relative flex-1 px-[.75rem] py-[.25rem] bg-1 hover:bg-2 rounded-full transition-all cursor-pointer' class:pointer-events-none={item.disabled} class:opacity-50={item.disabled}>
+					<span>{item.title}</span>
+
+					{#if item.active}
+						<span class='absolute right-[.75rem] top-[50%] translate-y-[-50%] flex size-3'>
+							<span class='absolute inline-flex h-full w-full animate-ping rounded-full bg-black/50'></span>
+							<span class='relative inline-flex size-3 rounded-full bg-black/80'></span>
+						</span>
+					{/if}
 				</div>
 			{/each}
 

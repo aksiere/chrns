@@ -1,7 +1,5 @@
+import { PUBLIC_X_DAY, PUBLIC_Y_DAY } from '$env/static/public'
 import { produce } from 'sveltekit-sse'
-
-const xDay = 6
-const yDay = 0
 
 function delay(milliseconds) {
 	return new Promise(function run(resolve) {
@@ -14,14 +12,14 @@ export function POST() {
 		while (true) {
 			const now = new Date()
 			const dayOfWeek = now.getDay()
-			const targetDay = dayOfWeek === xDay ? yDay : xDay
+			const targetDay = dayOfWeek === Number(PUBLIC_X_DAY) ? Number(PUBLIC_Y_DAY) : Number(PUBLIC_X_DAY)
 			const daysUntilTarget = (targetDay - dayOfWeek + 7) % 7 || 7
 			const nextTarget = new Date(now)
 			nextTarget.setDate(now.getDate() + daysUntilTarget)
 			nextTarget.setHours(0, 0, 0, 0)
 			const secondsUntil = Math.floor((nextTarget - now) / 1000)
 
-			const isActive = dayOfWeek === xDay
+			const isActive = dayOfWeek === Number(PUBLIC_X_DAY)
 			const { error } = emit('message', JSON.stringify({ isActive, secondsUntil }))
 
 			if (error) {

@@ -10,14 +10,42 @@
 	--color-muted: #777777;
 }
 
+@theme {
+	--color-0: #000000;
+	--color-1: #111111;
+	--color-2: #222222;
+
+	--color-9: #ffffff;
+
+	--color-muted: #777777;
+}
+
+@font-face {
+	font-family: 'Geist';
+	src:
+		local('test1'), local('test2'),
+		url('/assets/fonts/Geist.ttf');
+}
+
+@font-face {
+	font-family: 'GeistMono';
+	src:
+		local('test1'), local('test2'),
+		url('/assets/fonts/GeistMono.ttf');
+}
+
 :root {
-	font: 400 16px/1.5 'Inter', sans-serif;
+	font: 400 16px/1.5 'GeistMono', sans-serif;
 }
 
 body {
 	background: var(--color-0);
 	color: var(--color-9);
 	text-transform: lowercase;
+	
+	&::-webkit-scrollbar {
+		display: none;
+	}
 }
 
 ::selection {
