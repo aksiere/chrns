@@ -3,4 +3,4 @@
 	const value = source('/api/stream').select('message')
 </script>
 
-{$value || 'Connecting...'}
+<p class='text-sm'>{$value || 'Connecting...'}</p>

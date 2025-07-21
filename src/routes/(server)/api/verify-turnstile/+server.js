@@ -15,6 +15,5 @@ export async function POST({ request }) {
 	})
 
 	const data = await response.json()
-
 	return json({ success: data.success })
 }
