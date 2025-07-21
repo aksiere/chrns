@@ -1,26 +1,60 @@
 import { produce } from 'sveltekit-sse'
 
-/** @type {Set<Function>} */
-const emitters = new Set()
+const clients = new Set()
 
-setInterval(() => {
-	const message = `${Date.now()}`
-	for (const emit of emitters) {
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+async function broadcast(message) {
+	for (const emit of [...clients]) {
 		const { error } = emit('message', message)
 		if (error) {
-			emitters.delete(emit)
+			clients.delete(emit)
 		}
 	}
-}, 1000)
+}
+
+let broadcasting = false
+
+async function startBroadcasting() {
+	if (broadcasting) return
+	broadcasting = true
+	while (true) {
+		if (clients.size === 0) {
+			// Подождём немного и проверим снова, прежде чем останавливать цикл
+			await sleep(500)
+			if (clients.size === 0) {
+				broadcasting = false
+				break
+			}
+		}
+
+		const xDay = 6
+		const yDay = 0
+
+		const now = new Date()
+		const dayOfWeek = now.getDay()
+		const targetDay = dayOfWeek === xDay ? yDay : xDay
+		const daysUntilTarget = (targetDay - dayOfWeek + 7) % 7 || 7
+		const nextTarget = new Date(now)
+		nextTarget.setDate(now.getDate() + daysUntilTarget)
+		nextTarget.setHours(0, 0, 0, 0)
+		const secondsUntilSaturday = Math.floor((nextTarget - now) / 1000)
+		await broadcast(`${secondsUntilSaturday}`)
+		await sleep(1000)
+	}
+}
 
 export function POST() {
-	return produce(function start({ emit }) {
-		console.log('Client connected.')
-		emitters.add(emit)
-	}, {
-		ping: 4000,
-		stop() {
-			console.log('Client disconnected.')
+	return produce(({ emit }) => {
+		// console.log('Connection opened')
+		clients.add(emit)
+		startBroadcasting()
+
+		return () => {
+			clients.delete(emit)
+			// console.log('Connection closed')
 		}
-	},)
+	})
 }
